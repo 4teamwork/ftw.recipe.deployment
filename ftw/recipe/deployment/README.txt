@@ -4,11 +4,11 @@ Example usage
 First we create a fake ``plone.recipe.zope2instance`` recipe, which we can
 use in our tests.
 
-Create a recipes source directory
+Create a recipes source directory::
 
     >>> mkdir(sample_buildout, 'plone.recipe.zope2instance')
 
-and then create a source file with the fake recipe.
+and then create a source file with the fake recipe::
 
     >>> write(sample_buildout, 'plone.recipe.zope2instance',
     ...       'zope2instance.py',
@@ -36,7 +36,7 @@ and then create a source file with the fake recipe.
     ... """)
 
 Provide packaging information so that the recipe can be installed as a develop
-egg.
+egg::
 
     >>> write(sample_buildout, 'plone.recipe.zope2instance', 'setup.py',
     ... """
@@ -48,11 +48,11 @@ egg.
     ...     )
     ... """)
 
-Add a README.txt to avoid an annoying warning from distutils.
+Add a README.txt to avoid an annoying warning from distutils::
 
     >>> write(sample_buildout, 'plone.recipe.zope2instance', 'README.txt', " ")
 
-We'll start by creating a simple buildout that uses our recipe:
+We'll start by creating a simple buildout that uses our recipe::
 
     >>> write('buildout.cfg',
     ... """
@@ -67,7 +67,7 @@ We'll start by creating a simple buildout that uses our recipe:
     ... recipe = ftw.recipe.deployment
     ... """)
 
-Running the buildout gives us:
+Running the buildout gives us::
 
     >>> print system(buildout)
     Develop: '/sample-buildout/plone.recipe.zope2instance'
@@ -76,7 +76,7 @@ Running the buildout gives us:
     <BLANKLINE>
 
 We should now have a file with the same name as our buildout directory
-containing our logrotate configuration.
+containing our logrotate configuration::
 
     >>> cat(sample_buildout, 'etc', 'logrotate.d', 'sample-buildout')
     /sample-buildout/var/log/instance1.log
@@ -87,7 +87,7 @@ containing our logrotate configuration.
         endscript
     }
 
-We should also have a run-control script for instance1.
+We should also have a run-control script for instance1::
 
     >>> cat(sample_buildout, 'bin', 'rc-instance1')
     #!/bin/sh
@@ -133,7 +133,7 @@ We should also have a run-control script for instance1.
 
 
 Let's also add a zeo part. Thus we first need a fake ``plone.recipe.zeoserver``
-recipe.
+recipe::
 
     >>> mkdir(sample_buildout, 'plone.recipe.zeoserver')
     >>> write(sample_buildout, 'plone.recipe.zeoserver', 'zeoserver.py',
@@ -166,7 +166,7 @@ recipe.
     ... """)
     >>> write(sample_buildout, 'plone.recipe.zeoserver', 'README.txt', " ")
 
-Create a buildout with multiple instance parts and a zeo part.
+Create a buildout with multiple instance parts and a zeo part::
 
     >>> write('buildout.cfg',
     ... """
@@ -187,7 +187,7 @@ Create a buildout with multiple instance parts and a zeo part.
     ... recipe = ftw.recipe.deployment
     ... """)
 
-Running the buildout gives us:
+Running the buildout gives us::
 
     >>> print system(buildout)
     Develop: '/sample-buildout/plone.recipe.zope2instance'
@@ -198,7 +198,7 @@ Running the buildout gives us:
     Updating deployment.
     <BLANKLINE>
 
-Verify the contents of the logrotate configuration file:
+Verify the contents of the logrotate configuration file::
 
     >>> cat(sample_buildout, 'etc', 'logrotate.d', 'sample-buildout')
     /sample-buildout/var/log/instance1.log
@@ -219,7 +219,7 @@ Verify the contents of the logrotate configuration file:
         copytruncate
     }
 
-Verify the zeo run control script:
+Verify the zeo run control script::
 
     >>> cat(sample_buildout, 'bin', 'rc-zeo')
     #!/bin/sh
@@ -263,7 +263,7 @@ Verify the zeo run control script:
             ;;
     esac
 
-Verify the run control script for instance 2:
+Verify the run control script for instance 2::
 
     >>> cat(sample_buildout, 'bin', 'rc-instance2')
     #!/bin/sh
@@ -307,7 +307,7 @@ Verify the run control script for instance 2:
             ;;
     esac
 
-Before we can add a supervisor part we need a fake recipe for it.
+Before we can add a supervisor part we need a fake recipe for it::
 
     >>> mkdir(sample_buildout, 'collective.recipe.supervisor')
     >>> write(sample_buildout, 'collective.recipe.supervisor', 'supervisor.py',
@@ -337,7 +337,7 @@ Before we can add a supervisor part we need a fake recipe for it.
     >>> write(sample_buildout, 'collective.recipe.supervisor', 'README.txt',
     ... " ")
 
-Create a buildout with a supervisor part.
+Create a buildout with a supervisor part::
 
     >>> write('buildout.cfg',
     ... """
@@ -364,7 +364,7 @@ Create a buildout with a supervisor part.
     ... recipe = ftw.recipe.deployment
     ... """)
 
-Running the buildout gives us:
+Running the buildout gives us::
 
     >>> print system(buildout)
     Develop: '/sample-buildout/plone.recipe.zope2instance'
@@ -377,7 +377,7 @@ Running the buildout gives us:
     Updating deployment.
     <BLANKLINE>
 
-Verify the supervisor control script:
+Verify the supervisor control script::
 
     >>> cat(sample_buildout, 'bin', 'rc-supervisor')
     #!/bin/sh
