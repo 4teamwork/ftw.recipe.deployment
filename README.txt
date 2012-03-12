@@ -18,7 +18,8 @@ The recipe supports the following options:
 
 logrotate-directory
     The directory where the logrotate configuration file will be created.
-    Defaults to ``${buildout:directory}/etc/logrotate.d``.
+    Defaults to ``${buildout:directory}/etc/logrotate.d``. Add this parameter 
+    with no arguments to supress generation of logrotate configuration.
 
 logrotate-options
     A list of logrotate options that should be added to the logrotate 
@@ -38,7 +39,8 @@ logrotate-options
 
 rc-directory
     The directory where run-control scripts should be installed.
-    Defaults to ``${buildout:directory}/bin``.
+    Defaults to ``${buildout:directory}/bin``. Add this parameter with no
+    arguments to supress generation of run-control scripts.
 
 rc-prefix
     Name prefix for run-control scripts. Defaults to ``rc-``.
