@@ -20,10 +20,12 @@ def create_logrotate_conf(recipe):
     # Add configuration for zope parts
     for zope_part in recipe.zope_parts:
         logs = []
-        event_log = recipe.buildout[zope_part].get('event-log', None)
+        event_log = '%s/var/log/%s.log' % (recipe.buildout_dir, zope_part)
+        event_log = recipe.buildout[zope_part].get('event-log', event_log)
         if event_log:
             logs.append(event_log)
-        z2_log = recipe.buildout[zope_part].get('z2-log', None)
+        z2_log = '%s/var/log/%s-Z2.log' % (recipe.buildout_dir, zope_part)
+        z2_log = recipe.buildout[zope_part].get('z2-log', z2_log)
         if z2_log:
             logs.append(z2_log)
         if not logs:
@@ -49,7 +51,8 @@ def create_logrotate_conf(recipe):
 
     # Add configuration for zeo part
     for zeo_part in recipe.zeo_parts:
-        zeo_log = recipe.buildout[zeo_part].get('zeo-log', None)
+        zeo_log = '%s/var/log/%s.log' % (recipe.buildout_dir, zeo_part)
+        zeo_log = recipe.buildout[zeo_part].get('zeo-log', zeo_log)
         if not zeo_log:
             continue
 
