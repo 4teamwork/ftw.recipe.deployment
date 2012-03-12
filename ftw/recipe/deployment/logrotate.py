@@ -22,7 +22,7 @@ def create_logrotate_conf(recipe):
             return None
 
     logrotate_options = recipe.options.get('logrotate-options',
-                                           '').split()
+                                           '').splitlines()[1:]
     logrotate_conf = StringIO()
 
     # Add configuration for zope parts
@@ -50,7 +50,7 @@ def create_logrotate_conf(recipe):
         if 'postrotate' not in logrotate_options:
             logrotate_conf.write('    sharedscripts\n')
             logrotate_conf.write('    postrotate\n')
-            logrotate_conf.write('    /bin/kill -SIGUSR2 `cat %s/var/'
+            logrotate_conf.write('        /bin/kill -SIGUSR2 `cat %s/var/'
                                  '%s.pid` >/dev/null 2>&1\n' % (
                                  recipe.buildout_dir, zope_part))
             logrotate_conf.write('    endscript\n')

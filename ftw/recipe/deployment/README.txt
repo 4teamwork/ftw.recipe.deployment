@@ -79,6 +79,7 @@ We should now have a file with the same name as our buildout directory
 containing our logrotate configuration::
 
     >>> cat(sample_buildout, 'etc', 'logrotate.d', 'sample-buildout')
+    ... #doctest: -NORMALIZE_WHITESPACE
     /sample-buildout/var/log/instance1.log
     /sample-buildout/var/log/instance1-Z2.log {
         sharedscripts
@@ -441,3 +442,60 @@ Verify the supervisor control script::
     esac
     <BLANKLINE>
     exit $REVAL
+
+We can provide some additional logrotate options::
+
+    >>> write('buildout.cfg',
+    ... """
+    ... [buildout]
+    ... develop =
+    ...     plone.recipe.zope2instance
+    ...     plone.recipe.zeoserver
+    ...     collective.recipe.supervisor
+    ...
+    ... parts = instance1 deployment
+    ...
+    ... [instance1]
+    ... recipe = plone.recipe.zope2instance
+    ...
+    ... [deployment]
+    ... recipe = ftw.recipe.deployment
+    ... logrotate-options =
+    ...     rotate 4
+    ...     weekly
+    ...     missingok
+    ...     notifempty
+    ...     nomail
+    ... """)
+
+Running the buildout gives us::
+
+    >>> print system(buildout)
+    Develop: '/sample-buildout/plone.recipe.zope2instance'
+    Develop: '/sample-buildout/plone.recipe.zeoserver'
+    Develop: '/sample-buildout/collective.recipe.supervisor'
+    Uninstalling deployment.
+    Uninstalling supervisor.
+    Uninstalling zeo.
+    Uninstalling instance2.
+    Updating instance1.
+    Installing deployment.
+    <BLANKLINE>
+
+Verify that the file contains our logrotate options::
+
+    >>> cat(sample_buildout, 'etc', 'logrotate.d', 'sample-buildout') 
+    ... #doctest: -NORMALIZE_WHITESPACE
+    /sample-buildout/var/log/instance1.log
+    /sample-buildout/var/log/instance1-Z2.log {
+        rotate 4
+        weekly
+        missingok
+        notifempty
+        nomail
+        sharedscripts
+        postrotate
+            /bin/kill -SIGUSR2 `cat /sample-buildout/var/instance1.pid` >/dev/null 2>&1
+        endscript
+    }
+

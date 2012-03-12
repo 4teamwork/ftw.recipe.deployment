@@ -32,12 +32,12 @@ logrotate-options
 
     Example::
 
-      logrotate-options =
-        rotate 4
-        weekly
-        missingok
-        notifempty
-        nomail
+     logrotate-options =
+         rotate 4
+         weekly
+         missingok
+         notifempty
+         nomail
 
 rc-directory
     The directory where run-control scripts should be installed.
