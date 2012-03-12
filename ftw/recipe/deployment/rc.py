@@ -21,6 +21,8 @@ def create_rc_scripts(recipe):
         rc_file = open(rc_filename, 'w')
         rc_file.write(SUPERVISOR_RC_TEMPLATE % dict(
           supervisorctl=supervisorctl, supervisord=supervisord))
+        rc_file.close()
+        os.chmod(rc_filename, 0755)
         files.append(rc_filename)
     else:
         for zope_part in recipe.zope_parts:
@@ -28,6 +30,8 @@ def create_rc_scripts(recipe):
             rc_filename = '%s/%s%s'  % (rc_dir, rc_prefix, zope_part)
             rc_file = open(rc_filename, 'w')
             rc_file.write(ZOPE_RC_TEMPLATE % dict(zopectl=zopectl))
+            rc_file.close()
+            os.chmod(rc_filename, 0755)
             files.append(rc_filename)
 
         for zeo_part in recipe.zeo_parts:
@@ -35,6 +39,8 @@ def create_rc_scripts(recipe):
             rc_filename = '%s/%s%s'  % (rc_dir, rc_prefix, zeo_part)
             rc_file = open(rc_filename, 'w')
             rc_file.write(ZEO_RC_TEMPLATE % dict(zeoctl=zeoctl))
+            rc_file.close()
+            os.chmod(rc_filename, 0755)
             files.append(rc_filename)
 
     return files
