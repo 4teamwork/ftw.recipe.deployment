@@ -8,9 +8,9 @@ deploying Plone/Zope2 with buildout.
 
 As for now the following features are provided:
 
- * Create Logrotate configuration for all Zope 2 instance and ZEO parts.
+* Create Logrotate configuration for all Zope 2 instance and ZEO parts.
 
- * Create RedHat-like run-control scripts.
+* Create RedHat-like run-control scripts.
 
 
 Supported options
