@@ -1,3 +1,4 @@
+import os
 import os.path
 from StringIO import StringIO
 
@@ -12,6 +13,13 @@ def create_logrotate_conf(recipe):
                                      'etc', 'logrotate.d')
     if not logrotate_dir:
         return None
+
+    # Try to create the logrotate directory
+    if not os.path.isdir(logrotate_dir):
+        try:
+            os.makedirs(logrotate_dir)
+        except OSError:
+            return None
 
     logrotate_options = recipe.options.get('logrotate-options',
                                            '').split()

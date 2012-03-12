@@ -67,11 +67,6 @@ We'll start by creating a simple buildout that uses our recipe:
     ... recipe = ftw.recipe.deployment
     ... """)
 
-Create the directory where our logrotate configuration should be stored.
-
-    >>> mkdir(sample_buildout, 'etc')
-    >>> mkdir(sample_buildout, 'etc', 'logrotate.d')
-
 Running the buildout gives us:
 
     >>> print system(buildout)
