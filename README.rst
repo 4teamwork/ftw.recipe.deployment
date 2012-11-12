@@ -3,7 +3,7 @@
 Introduction
 ============
 
-This recipe provides support for configuring various unix services when 
+This recipe provides support for configuring various unix services when
 deploying Plone/Zope2 with buildout.
 
 As for now the following features are provided:
@@ -20,11 +20,11 @@ The recipe supports the following options:
 
 logrotate-directory
     The directory where the logrotate configuration file will be created.
-    Defaults to ``${buildout:directory}/etc/logrotate.d``. Add this parameter 
+    Defaults to ``${buildout:directory}/etc/logrotate.d``. Add this parameter
     with no arguments to supress generation of logrotate configuration.
 
 logrotate-options
-    A list of logrotate options that should be added to the logrotate 
+    A list of logrotate options that should be added to the logrotate
     configuration.
 
     Configuration for reopening rotated logfiles is added automatically if
@@ -54,10 +54,26 @@ has-supervisor
     tries to automatically determine if supervisor is beeing used.
 
 zopes
-    A list of Zope 2 instance parts. Defaults to all parts using the 
+    A list of Zope 2 instance parts. Defaults to all parts using the
     ``plone.recipe.zope2instance`` recipe.
 
 zeos
-    A list of ZEO server parts. Defaults to all parts using either the 
+    A list of ZEO server parts. Defaults to all parts using either the
     ``plone.recipe.zeoserver`` or ``plone.recipe.zope2zeoserver`` recipe.
 
+
+
+Links
+=====
+
+- Main github project repository: https://github.com/4teamwork/ftw.recipe.deployment
+- Issue tracker: https://github.com/4teamwork/ftw.recipe.deployment/issues
+- Package on pypi: http://pypi.python.org/pypi/ftw.recipe.deployment
+
+
+Copyright
+---------
+
+This package is copyright by `4teamwork <http://www.4teamwork.ch/>`_.
+
+``ftw.recipe.deployment`` is licensed under GNU General Public License, version 2.
