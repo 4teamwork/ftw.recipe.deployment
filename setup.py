@@ -15,6 +15,7 @@ setup(name='ftw.recipe.deployment',
                        + "\n" +
                        open(os.path.join("ftw", "recipe", "deployment",
                                          "README.txt")).read(),
+
       classifiers=[
         'Framework :: Buildout :: Recipe',
         'Intended Audience :: Developers',
@@ -22,11 +23,13 @@ setup(name='ftw.recipe.deployment',
         'Programming Language :: Python',
         'Topic :: Software Development :: Build Tools',
         ],
+
       keywords='',
-      author='Thomas Buchberger',
-      author_email='t.buchberger@4teamwork.ch',
+      author='4teamwork GmbH',
+      author_email='mailto:info@4teamwork.ch',
       url='https://github.com/4teamwork/ftw.recipe.deployment',
-      license='ZPL',
+      license='GPL2',
+
       packages=find_packages(exclude=['ez_setup']),
       namespace_packages=['ftw', 'ftw.recipe'],
       include_package_data=True,
@@ -35,8 +38,10 @@ setup(name='ftw.recipe.deployment',
         'setuptools',
         'zc.buildout',
         ],
+
       tests_require=tests_require,
       extras_require=dict(tests=tests_require),
+
       test_suite='ftw.recipe.deployment.tests.test_docs.test_suite',
       entry_points = {
         'zc.buildout': ['default = ftw.recipe.deployment:Recipe']},
