@@ -9,7 +9,7 @@ setup(name='ftw.recipe.deployment',
       version=version,
       description="A zc.buildout recipe for Plone deployments which configures"
                   " various unix system services.",
-      long_description=open("README.txt").read()
+      long_description=open("README.rst").read()
                        + "\n" +
                        open("HISTORY.txt").read()
                        + "\n" +
