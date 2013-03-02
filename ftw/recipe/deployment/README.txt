@@ -308,6 +308,84 @@ Verify the run control script for instance 2::
             ;;
     esac
 
+We can specify the user that should be used to run processes::
+
+    >>> write('buildout.cfg',
+    ... """
+    ... [buildout]
+    ... develop = plone.recipe.zope2instance plone.recipe.zeoserver
+    ... parts = instance1 instance2 zeo deployment
+    ...
+    ... [instance1]
+    ... recipe = plone.recipe.zope2instance
+    ...
+    ... [instance2]
+    ... <= instance1
+    ...
+    ... [zeo]
+    ... recipe = plone.recipe.zeoserver
+    ...
+    ... [deployment]
+    ... recipe = ftw.recipe.deployment
+    ... rc-user = plone
+    ... """)
+
+Running the buildout gives us::
+
+    >>> print system(buildout)
+    Develop: '/sample-buildout/plone.recipe.zope2instance'
+    Develop: '/sample-buildout/plone.recipe.zeoserver'
+    Uninstalling deployment.
+    Updating instance1.
+    Updating instance2.
+    Updating zeo.
+    Installing deployment.
+    <BLANKLINE>
+
+Verify the run control script for instance 1::
+
+    >>> cat(sample_buildout, 'bin', 'rc-instance1')
+    #!/bin/sh
+    <BLANKLINE>
+    # chkconfig: 345 90 10
+    # description: Starts Zope
+    <BLANKLINE>
+    START_SCRIPT="/sample-buildout/bin/instance1"
+    <BLANKLINE>
+    [ -f $START_SCRIPT ] || exit 1
+    <BLANKLINE>
+    # Source function library.
+    . /etc/init.d/functions
+    <BLANKLINE>
+    RETVAL=0
+    <BLANKLINE>
+    if [ $(whoami) != "root" ]; then
+        echo "You must be root."
+        exit 1
+    fi
+    <BLANKLINE>
+    case $1 in
+        start|stop)
+            su plone -c "$START_SCRIPT $*" </dev/null
+            RETVAL=$?
+            if [ $RETVAL -eq 0 ]
+            then
+                echo_success
+            else
+                echo_failure
+            fi
+            echo
+            ;;
+        restart)
+            ${0} stop
+            sleep 1
+            ${0} start
+            ;;
+        *)
+            su plone -c "$START_SCRIPT $*" </dev/null
+            ;;
+    esac
+
 Before we can add a supervisor part we need a fake recipe for it::
 
     >>> mkdir(sample_buildout, 'collective.recipe.supervisor')
@@ -363,6 +441,7 @@ Create a buildout with a supervisor part::
     ...
     ... [deployment]
     ... recipe = ftw.recipe.deployment
+    ... rc-user = plone
     ... """)
 
 Running the buildout gives us::
@@ -404,7 +483,7 @@ Verify the supervisor control script::
     <BLANKLINE>
     start() {
         echo -n "Starting supervisor: "
-        su zope -c "$SUPERVISORD"
+        su plone -c "$SUPERVISORD"
         RETVAL=$?
         if [ $RETVAL -eq 0 ]; then
             echo_success
@@ -416,7 +495,7 @@ Verify the supervisor control script::
     <BLANKLINE>
     stop() {
         echo -n "Stopping supervisor: "
-        su zope -c "$SUPERVISORCTL shutdown"
+        su plone -c "$SUPERVISORCTL shutdown"
         RETVAL=$?
         if [ $RETVAL -eq 0 ]; then
             echo_success

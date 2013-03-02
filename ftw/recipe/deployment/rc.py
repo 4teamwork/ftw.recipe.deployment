@@ -9,6 +9,7 @@ def create_rc_scripts(recipe):
 
     rc_prefix = recipe.options.get('rc-prefix', 'rc-')
     rc_dir = recipe.options.get('rc-directory', None)
+    rc_user = recipe.options.get('rc-user', 'zope')
     if rc_dir is None:
         rc_dir = os.path.join(recipe.buildout_dir, 'bin')
     if not rc_dir:
@@ -20,7 +21,7 @@ def create_rc_scripts(recipe):
         rc_filename = '%s/%ssupervisor'  % (rc_dir, rc_prefix)
         rc_file = open(rc_filename, 'w')
         rc_file.write(SUPERVISOR_RC_TEMPLATE % dict(
-          supervisorctl=supervisorctl, supervisord=supervisord))
+          supervisorctl=supervisorctl, supervisord=supervisord, user=rc_user))
         rc_file.close()
         os.chmod(rc_filename, 0755)
         files.append(rc_filename)
@@ -29,7 +30,7 @@ def create_rc_scripts(recipe):
             zopectl = '%s/bin/%s'  % (recipe.buildout_dir, zope_part)
             rc_filename = '%s/%s%s'  % (rc_dir, rc_prefix, zope_part)
             rc_file = open(rc_filename, 'w')
-            rc_file.write(ZOPE_RC_TEMPLATE % dict(zopectl=zopectl))
+            rc_file.write(ZOPE_RC_TEMPLATE % dict(zopectl=zopectl, user=rc_user))
             rc_file.close()
             os.chmod(rc_filename, 0755)
             files.append(rc_filename)
@@ -38,7 +39,7 @@ def create_rc_scripts(recipe):
             zeoctl = '%s/bin/%s'  % (recipe.buildout_dir, zeo_part)
             rc_filename = '%s/%s%s'  % (rc_dir, rc_prefix, zeo_part)
             rc_file = open(rc_filename, 'w')
-            rc_file.write(ZEO_RC_TEMPLATE % dict(zeoctl=zeoctl))
+            rc_file.write(ZEO_RC_TEMPLATE % dict(zeoctl=zeoctl, user=rc_user))
             rc_file.close()
             os.chmod(rc_filename, 0755)
             files.append(rc_filename)
@@ -66,7 +67,7 @@ fi
 
 case $1 in
     start|stop)
-        su zope -c "$START_SCRIPT $*" </dev/null
+        su %(user)s -c "$START_SCRIPT $*" </dev/null
         RETVAL=$?
         if [ $RETVAL -eq 0 ]
         then
@@ -82,7 +83,7 @@ case $1 in
         ${0} start
         ;;
     *)
-        su zope -c "$START_SCRIPT $*" </dev/null
+        su %(user)s -c "$START_SCRIPT $*" </dev/null
         ;;
 esac
 """
@@ -108,7 +109,7 @@ fi
 
 case $1 in
     start|stop)
-        su zope -c "$START_SCRIPT $*" </dev/null
+        su %(user)s -c "$START_SCRIPT $*" </dev/null
         RETVAL=$?
         if [ $RETVAL -eq 0 ]
         then
@@ -124,7 +125,7 @@ case $1 in
         ${0} start
         ;;
     *)
-        su zope -c "$START_SCRIPT $*" </dev/null
+        su %(user)s -c "$START_SCRIPT $*" </dev/null
         ;;
 esac
 """
@@ -152,7 +153,7 @@ fi
 
 start() {
     echo -n "Starting supervisor: "
-    su zope -c "$SUPERVISORD"
+    su %(user)s -c "$SUPERVISORD"
     RETVAL=$?
     if [ $RETVAL -eq 0 ]; then
         echo_success
@@ -164,7 +165,7 @@ start() {
 
 stop() {
     echo -n "Stopping supervisor: "
-    su zope -c "$SUPERVISORCTL shutdown"
+    su %(user)s -c "$SUPERVISORCTL shutdown"
     RETVAL=$?
     if [ $RETVAL -eq 0 ]; then
         echo_success

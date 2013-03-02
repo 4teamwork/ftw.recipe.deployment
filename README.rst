@@ -47,6 +47,10 @@ rc-directory
 rc-prefix
     Name prefix for run-control scripts. Defaults to ``rc-``.
 
+rc-user
+    The name of the user used to start processes by run-control scripts.
+    Defaults to ``zope``.
+
 has-supervisor
     Boolean indication whether supervisor is beeing used. If true, a run
     control script is generate for supervisor only. If false, run control
