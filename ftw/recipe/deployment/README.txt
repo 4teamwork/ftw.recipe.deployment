@@ -505,6 +505,10 @@ Verify the supervisor control script::
         return $RETVAL
     }
     <BLANKLINE>
+    status() {
+        su plone -c "$SUPERVISORCTL status"
+    }
+    <BLANKLINE>
     case "$1" in
         start)
             start
@@ -517,6 +521,10 @@ Verify the supervisor control script::
         restart)
             stop
             start
+            ;;
+    <BLANKLINE>
+        status)
+            status
             ;;
     esac
     <BLANKLINE>

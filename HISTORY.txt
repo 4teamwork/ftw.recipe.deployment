@@ -8,6 +8,9 @@ Changelog
   processes.
   [buchi]
 
+- Added status command to supervisor run-control script.
+  [buchi]
+
 
 1.0.1 (2012-03-12)
 ------------------

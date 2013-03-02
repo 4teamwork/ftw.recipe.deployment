@@ -175,6 +175,10 @@ stop() {
     return $RETVAL
 }
 
+status() {
+    su %(user)s -c "$SUPERVISORCTL status"
+}
+
 case "$1" in
     start)
         start
@@ -187,6 +191,10 @@ case "$1" in
     restart)
         stop
         start
+        ;;
+
+    status)
+        status
         ;;
 esac
 
