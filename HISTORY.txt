@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.1 (unreleased)
+1.1 (2013-03-05)
 ----------------
 
 - Added option to specify the user under which run-control scripts start
