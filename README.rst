@@ -53,7 +53,7 @@ rc-user
 
 has-supervisor
     Boolean indication whether supervisor is beeing used. If true, a run
-    control script is generate for supervisor only. If false, run control
+    control script is generated for supervisor only. If false, run control
     scripts are generated for all zope and zeo parts. By default, the recipe
     tries to automatically determine if supervisor is beeing used.
 
