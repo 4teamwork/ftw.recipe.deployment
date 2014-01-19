@@ -4,7 +4,8 @@ Changelog
 1.1.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Make postrotate command fail silently if pid file is missing.
+  [buchi]
 
 
 1.1 (2013-03-05)

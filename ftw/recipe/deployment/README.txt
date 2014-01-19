@@ -84,7 +84,7 @@ containing our logrotate configuration::
     /sample-buildout/var/log/instance1-Z2.log {
         sharedscripts
         postrotate
-            /bin/kill -SIGUSR2 `cat /sample-buildout/var/instance1.pid` >/dev/null 2>&1
+            /bin/kill -SIGUSR2 `cat /sample-buildout/var/instance1.pid 2>/dev/null` >/dev/null 2>&1 || true
         endscript
     }
 
@@ -206,14 +206,14 @@ Verify the contents of the logrotate configuration file::
     /sample-buildout/var/log/instance1-Z2.log {
         sharedscripts
         postrotate
-            /bin/kill -SIGUSR2 `cat /sample-buildout/var/instance1.pid` >/dev/null 2>&1
+            /bin/kill -SIGUSR2 `cat /sample-buildout/var/instance1.pid 2>/dev/null` >/dev/null 2>&1 || true
         endscript
     }
     /sample-buildout/var/log/instance2.log
     /sample-buildout/var/log/instance2-Z2.log {
         sharedscripts
         postrotate
-            /bin/kill -SIGUSR2 `cat /sample-buildout/var/instance2.pid` >/dev/null 2>&1
+            /bin/kill -SIGUSR2 `cat /sample-buildout/var/instance2.pid 2>/dev/null` >/dev/null 2>&1 || true
         endscript
     }
     /sample-buildout/var/log/zeo.log {
@@ -582,7 +582,7 @@ Verify that the file contains our logrotate options::
         nomail
         sharedscripts
         postrotate
-            /bin/kill -SIGUSR2 `cat /sample-buildout/var/instance1.pid` >/dev/null 2>&1
+            /bin/kill -SIGUSR2 `cat /sample-buildout/var/instance1.pid 2>/dev/null` >/dev/null 2>&1 || true
         endscript
     }
 

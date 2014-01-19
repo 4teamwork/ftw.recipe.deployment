@@ -51,7 +51,8 @@ def create_logrotate_conf(recipe):
             logrotate_conf.write('    sharedscripts\n')
             logrotate_conf.write('    postrotate\n')
             logrotate_conf.write('        /bin/kill -SIGUSR2 `cat %s/var/'
-                                 '%s.pid` >/dev/null 2>&1\n' % (
+                                 '%s.pid 2>/dev/null` >/dev/null 2>&1 || true'
+                                 '\n' % (
                                  recipe.buildout_dir, zope_part))
             logrotate_conf.write('    endscript\n')
 
