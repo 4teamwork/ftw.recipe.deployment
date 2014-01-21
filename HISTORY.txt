@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.1.1 (unreleased)
+1.1.1 (2014-01-21)
 ------------------
 
 - Make postrotate command fail silently if pid file is missing.
