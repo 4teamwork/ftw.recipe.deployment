@@ -70,9 +70,9 @@ zeos
 Links
 =====
 
-- Main github project repository: https://github.com/4teamwork/ftw.recipe.deployment
-- Issue tracker: https://github.com/4teamwork/ftw.recipe.deployment/issues
-- Package on pypi: http://pypi.python.org/pypi/ftw.recipe.deployment
+- Github: https://github.com/4teamwork/ftw.recipe.deployment
+- Issues: https://github.com/4teamwork/ftw.recipe.deployment/issues
+- Pypi: http://pypi.python.org/pypi/ftw.recipe.deployment
 - Continuous integration: https://jenkins.4teamwork.ch/search?q=ftw.recipe.deployment
 
 
