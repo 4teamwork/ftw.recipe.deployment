@@ -4,11 +4,13 @@ Doctest runner for 'ftw.recipe.deployment'.
 """
 __docformat__ = 'restructuredtext'
 
+import doctest
+import re
 import unittest
 import zc.buildout.tests
 import zc.buildout.testing
 
-from zope.testing import doctest, renormalizing
+from zope.testing import renormalizing
 
 optionflags =  (doctest.ELLIPSIS |
                 doctest.NORMALIZE_WHITESPACE |
@@ -35,6 +37,7 @@ def test_suite():
                         # second item, e.g.
                         # (re.compile('my-[rR]eg[eE]ps'), 'my-regexps')
                         zc.buildout.testing.normalize_path,
+                        (re.compile("Not found: .*buildouttests/[a-zA-Z0-9.]+/\n"), ''),
                         ]),
                 ),
             ))

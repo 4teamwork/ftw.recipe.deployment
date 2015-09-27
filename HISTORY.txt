@@ -4,7 +4,9 @@ Changelog
 1.1.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Fix handling of logrotate options in buildout 2.x by no longer dropping the
+  first option.
+  [buchi]
 
 
 1.1.1 (2014-01-21)
