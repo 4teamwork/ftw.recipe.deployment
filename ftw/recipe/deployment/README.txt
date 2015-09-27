@@ -90,6 +90,10 @@ containing our logrotate configuration::
 
 We should also have a run-control script for instance1::
 
+    >>> ls(sample_buildout, 'bin')
+    - buildout
+    - rc-instance1
+
     >>> cat(sample_buildout, 'bin', 'rc-instance1')
     #!/bin/sh
     <BLANKLINE>
@@ -132,7 +136,6 @@ We should also have a run-control script for instance1::
             ;;
     esac
 
-
 Let's also add a zeo part. Thus we first need a fake ``plone.recipe.zeoserver``
 recipe::
 
@@ -149,6 +152,8 @@ recipe::
     ...                               buildout['buildout']['directory'],
     ...                               'var', 'log', self.name + '.log'
     ...                               )
+    ...         self.storage_number = options.get('storage-number', '1')
+    ...         self.blob_storage = options.get('blob-storage', '')
     ...
     ...     def install(self):
     ...         return tuple()
@@ -307,6 +312,12 @@ Verify the run control script for instance 2::
             su zope -c "$START_SCRIPT $*" </dev/null
             ;;
     esac
+
+We should also have a packall script for packing all databases::
+
+    >>> cat(sample_buildout, 'bin', 'packall')
+    #!/bin/sh
+    /sample-buildout/bin/zeopack -S 1 -B /sample-buildout/var/blobstorage
 
 We can specify the user that should be used to run processes::
 
@@ -586,3 +597,157 @@ Verify that the file contains our logrotate options::
         endscript
     }
 
+We can provide custom storage options::
+
+    >>> write('buildout.cfg',
+    ... """
+    ... [buildout]
+    ... develop = plone.recipe.zope2instance plone.recipe.zeoserver
+    ... parts = instance1 zeo deployment
+    ...
+    ... [instance1]
+    ... recipe = plone.recipe.zope2instance
+    ...
+    ... [zeo]
+    ... recipe = plone.recipe.zeoserver
+    ... storage-number = main
+    ... blob-storage = blobstorage-main
+    ...
+    ... [deployment]
+    ... recipe = ftw.recipe.deployment
+    ... """)
+
+Running the buildout gives us::
+
+    >>> print system(buildout)
+    Develop: '/sample-buildout/plone.recipe.zope2instance'
+    Develop: '/sample-buildout/plone.recipe.zeoserver'
+    Uninstalling deployment.
+    Updating instance1.
+    Installing zeo.
+    Installing deployment.
+    <BLANKLINE>
+
+Our packall script should contain the correct storage parameters::
+
+    >>> cat(sample_buildout, 'bin', 'packall')
+    #!/bin/sh
+    /sample-buildout/bin/zeopack -S main -B /sample-buildout/var/blobstorage-main
+
+Let's add a filestorage part. Thus we first need a fake ``collective.recipe.filestorage``
+recipe::
+
+    >>> mkdir(sample_buildout, 'collective.recipe.filestorage')
+    >>> write(sample_buildout, 'collective.recipe.filestorage', 'filestorage.py',
+    ... """
+    ... import os, zc.buildout
+    ...
+    ... class Recipe(object):
+    ...
+    ...     def __init__(self, buildout, name, options):
+    ...         self.name, self.options = name, options
+    ...         self.subparts = options.get('parts', '').split()
+    ...
+    ...     def install(self):
+    ...         return tuple()
+    ...
+    ...     def update(self):
+    ...         pass
+    ... """)
+    >>> write(sample_buildout, 'collective.recipe.filestorage', 'setup.py',
+    ... """
+    ... from setuptools import setup
+    ...
+    ... setup(
+    ...     name = "collective.recipe.filestorage",
+    ...     entry_points = {'zc.buildout': ['default = filestorage:Recipe']},
+    ...     )
+    ... """)
+    >>> write(sample_buildout, 'collective.recipe.filestorage', 'README.txt', " ")
+
+Create a buildout with a filestorage part::
+
+    >>> write('buildout.cfg',
+    ... """
+    ... [buildout]
+    ... develop = plone.recipe.zope2instance plone.recipe.zeoserver collective.recipe.filestorage
+    ... parts = instance1 zeo filestorage deployment
+    ...
+    ... [instance1]
+    ... recipe = plone.recipe.zope2instance
+    ...
+    ... [zeo]
+    ... recipe = plone.recipe.zeoserver
+    ...
+    ... [filestorage]
+    ... recipe = collective.recipe.filestorage
+    ... parts = storage1
+    ...
+    ... [deployment]
+    ... recipe = ftw.recipe.deployment
+    ... """)
+
+Running the buildout gives us::
+
+    >>> print system(buildout)
+    Develop: '/sample-buildout/plone.recipe.zope2instance'
+    Develop: '/sample-buildout/plone.recipe.zeoserver'
+    Develop: '/sample-buildout/collective.recipe.filestorage'
+    Uninstalling zeo.
+    Updating instance1.
+    Installing zeo.
+    Installing filestorage.
+    Updating deployment.
+    <BLANKLINE>
+
+Our packall script should contain pack commands for all storages::
+
+    >>> cat(sample_buildout, 'bin', 'packall')
+    #!/bin/sh
+    /sample-buildout/bin/zeopack -S 1 -B /sample-buildout/var/blobstorage
+    /sample-buildout/bin/zeopack -S storage1
+
+Let's create a buildout with multiple filestorages and blobs::
+
+    >>> write('buildout.cfg',
+    ... """
+    ... [buildout]
+    ... develop = plone.recipe.zope2instance plone.recipe.zeoserver collective.recipe.filestorage
+    ... parts = instance1 zeo filestorage deployment
+    ...
+    ... [instance1]
+    ... recipe = plone.recipe.zope2instance
+    ...
+    ... [zeo]
+    ... recipe = plone.recipe.zeoserver
+    ...
+    ... [filestorage]
+    ... recipe = collective.recipe.filestorage
+    ... parts = storage1 storage2
+    ... blob-storage = var/blobstorage-%(fs_part_name)s
+    ... zeo-storage = %(fs_part_name)s_storage
+    ...
+    ... [deployment]
+    ... recipe = ftw.recipe.deployment
+    ... """)
+
+Running the buildout gives us::
+
+    >>> print system(buildout)
+    Develop: '/sample-buildout/plone.recipe.zope2instance'
+    Develop: '/sample-buildout/plone.recipe.zeoserver'
+    Develop: '/sample-buildout/collective.recipe.filestorage'
+    Uninstalling filestorage.
+    Updating instance1.
+    Updating zeo.
+    Installing filestorage.
+    Updating deployment.
+    <BLANKLINE>
+
+Our packall script should contain pack commands for all storages::
+
+    >>> cat(sample_buildout, 'bin', 'packall')
+    #!/bin/sh
+    /sample-buildout/bin/zeopack -S 1 -B /sample-buildout/var/blobstorage
+    /sample-buildout/bin/zeopack -S storage1_storage -B /sample-buildout/var/blobstorage-storage1
+    /sample-buildout/bin/zeopack -S storage2_storage -B /sample-buildout/var/blobstorage-storage2
