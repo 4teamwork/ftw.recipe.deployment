@@ -751,3 +751,40 @@ Our packall script should contain pack commands for all storages::
     /sample-buildout/bin/zeopack -S 1 -B /sample-buildout/var/blobstorage
     /sample-buildout/bin/zeopack -S storage1_storage -B /sample-buildout/var/blobstorage-storage1
     /sample-buildout/bin/zeopack -S storage2_storage -B /sample-buildout/var/blobstorage-storage2
+
+Create a buildout with the packall-symlink-directory option::
+
+    >>> write('buildout.cfg',
+    ... """
+    ... [buildout]
+    ... develop = plone.recipe.zope2instance plone.recipe.zeoserver collective.recipe.filestorage
+    ... parts = instance1 zeo deployment
+    ...
+    ... [instance1]
+    ... recipe = plone.recipe.zope2instance
+    ...
+    ... [zeo]
+    ... recipe = plone.recipe.zeoserver
+    ...
+    ... [deployment]
+    ... recipe = ftw.recipe.deployment
+    ... packall-symlink-directory = etc/zodbpack.d
+    ... """)
+
+Running the buildout gives us::
+
+    >>> print system(buildout)
+    Develop: '/sample-buildout/plone.recipe.zope2instance'
+    Develop: '/sample-buildout/plone.recipe.zeoserver'
+    Develop: '/sample-buildout/collective.recipe.filestorage'
+    Uninstalling deployment.
+    Uninstalling filestorage.
+    Updating instance1.
+    Updating zeo.
+    Installing deployment.
+    <BLANKLINE>
+
+We should now have a symlink in the given directory::
+
+    >>> ls(sample_buildout, 'etc', 'zodbpack.d')
+    l  sample-buildout

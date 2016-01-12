@@ -38,6 +38,7 @@ def create_pack_script(recipe):
             storages.append((file_storage, blob_storage))
 
     # Create script
+    created_files = []
     script = "#!/bin/sh\n"
     zeopack = os.path.join(recipe.buildout_dir, 'bin', 'zeopack')
     for storage in storages:
@@ -52,7 +53,22 @@ def create_pack_script(recipe):
     script_file.write(script)
     script_file.close()
     os.chmod(script_path, 0755)
-    return [script_path]
+    created_files.append(script_path)
+
+    # Create symlink
+    symlink_dir = recipe.options.get('packall-symlink-directory', None)
+    if symlink_dir:
+        # Try to create the symlink directory
+        if not os.path.isdir(symlink_dir):
+            try:
+                os.makedirs(symlink_dir)
+            except OSError:
+                pass
+        if os.path.isdir(symlink_dir):
+            link_path = os.path.join(symlink_dir, recipe.buildout_name)
+            os.symlink(script_path, link_path)
+            created_files.append(link_path)
+    return created_files
 
 
 def subpart_option(buildout, part, subpart, option, default=''):
