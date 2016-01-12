@@ -3,6 +3,8 @@
 import os.path
 from ftw.recipe.deployment.logrotate import create_logrotate_conf
 from ftw.recipe.deployment.rc import create_rc_scripts
+from ftw.recipe.deployment.pack import create_pack_script
+
 
 class Recipe(object):
     """zc.buildout recipe"""
@@ -44,6 +46,14 @@ class Recipe(object):
             else:
                 self.has_supervisor = True
 
+        # Figure out filestorage parts
+        self.filestorage_parts = options.get('filestorage', '').split()
+        if len(self.filestorage_parts) == 0:
+            for part_name in part_names:
+                part = self.buildout[part_name]
+                if part.get('recipe', None) == 'collective.recipe.filestorage':
+                    self.filestorage_parts.append(part_name)
+
         self.buildout_dir = self.buildout['buildout']['directory']
         self.buildout_name = os.path.basename(self.buildout_dir)
 
@@ -58,6 +68,8 @@ class Recipe(object):
 
         rc_scripts = create_rc_scripts(self)
         files.extend(rc_scripts)
+
+        files.extend(create_pack_script(self))
 
         # Return files that were created by the recipe. The buildout
         # will remove all returned files upon reinstall.

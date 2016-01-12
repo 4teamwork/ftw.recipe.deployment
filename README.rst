@@ -12,6 +12,8 @@ As for now the following features are provided:
 
 * Create RedHat-like run-control scripts.
 
+* Create packall script for packing of all storages.
+
 
 Supported options
 =================
@@ -65,6 +67,9 @@ zeos
     A list of ZEO server parts. Defaults to all parts using either the
     ``plone.recipe.zeoserver`` or ``plone.recipe.zope2zeoserver`` recipe.
 
+packall-symlink-directory
+    Creates a symlink to the packall script in the given directory. Can
+    be used to automate packing for multiple deployments.
 
 
 Links

@@ -22,7 +22,8 @@ def create_logrotate_conf(recipe):
             return None
 
     logrotate_options = recipe.options.get('logrotate-options',
-                                           '').splitlines()[1:]
+                                           '').splitlines()
+    logrotate_options = [opt for opt in logrotate_options if opt]
     logrotate_conf = StringIO()
 
     # Add configuration for zope parts
@@ -84,5 +85,3 @@ def create_logrotate_conf(recipe):
     logrotate_file.write(logrotate_conf.getvalue())
     logrotate_file.close()
     return file_name
-
-    

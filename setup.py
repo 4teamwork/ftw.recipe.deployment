@@ -3,7 +3,7 @@ import os
 from setuptools import setup, find_packages
 
 version = '1.1.2.dev0'
-tests_require = ['zope.testing']
+tests_require = ['zc.buildout [test]']
 
 setup(name='ftw.recipe.deployment',
       version=version,

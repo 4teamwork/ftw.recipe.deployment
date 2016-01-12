@@ -1,10 +1,15 @@
 Changelog
 =========
 
-1.1.2 (unreleased)
+1.2.0 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Create packall script for packing of all storages.
+  [buchi]
+
+- Fix handling of logrotate options in buildout 2.x by no longer dropping the
+  first option.
+  [buchi]
 
 
 1.1.1 (2014-01-21)
