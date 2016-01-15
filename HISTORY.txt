@@ -4,6 +4,10 @@ Changelog
 1.2.0 (unreleased)
 ------------------
 
+- Add option to create startup and shutdown scripts in a global
+  directory instead of run-control scripts.
+  [buchi]
+
 - Create packall script for packing of all storages.
   [buchi]
 

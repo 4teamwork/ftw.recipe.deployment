@@ -788,3 +788,50 @@ We should now have a symlink in the given directory::
 
     >>> ls(sample_buildout, 'etc', 'zodbpack.d')
     l  sample-buildout
+
+Create a buildout with startup/shutdown directory option::
+
+    >>> write('buildout.cfg',
+    ... """
+    ... [buildout]
+    ... develop = plone.recipe.zope2instance plone.recipe.zeoserver collective.recipe.supervisor
+    ... parts = instance1 zeo supervisor deployment
+    ...
+    ... [instance1]
+    ... recipe = plone.recipe.zope2instance
+    ...
+    ... [zeo]
+    ... recipe = plone.recipe.zeoserver
+    ...
+    ... [supervisor]
+    ... recipe = collective.recipe.supervisor
+    ...
+    ... [deployment]
+    ... recipe = ftw.recipe.deployment
+    ... startup-directory = etc/startup.d
+    ... shutdown-directory = etc/shutdown.d
+    ... """)
+
+Running the buildout gives us::
+
+    >>> print system(buildout)
+    Develop: '/sample-buildout/plone.recipe.zope2instance'
+    Develop: '/sample-buildout/plone.recipe.zeoserver'
+    Develop: '/sample-buildout/collective.recipe.supervisor'
+    Uninstalling deployment.
+    Updating instance1.
+    Updating zeo.
+    Installing supervisor.
+    Installing deployment.
+
+Verify the startup script::
+
+    >>> cat(sample_buildout, 'etc', 'startup.d', 'sample-buildout')
+    #!/bin/sh
+    /sample-buildout/bin/supervisord
+
+Verify the shutdown script::
+
+    >>> cat(sample_buildout, 'etc', 'shutdown.d', 'sample-buildout')
+    #!/bin/sh
+    /sample-buildout/bin/supervisorctl shutdown
