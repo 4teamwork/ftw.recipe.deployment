@@ -66,6 +66,8 @@ def create_pack_script(recipe):
                 pass
         if os.path.isdir(symlink_dir):
             link_path = os.path.join(symlink_dir, recipe.buildout_name)
+            if os.path.exists(link_path):
+                os.remove(link_path)
             os.symlink(script_path, link_path)
             created_files.append(link_path)
     return created_files
