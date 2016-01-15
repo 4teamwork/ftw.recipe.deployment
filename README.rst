@@ -41,6 +41,14 @@ logrotate-options
          notifempty
          nomail
 
+startup-directory
+    If specified, a start script is created in the given directory.
+    Generation of run-control scripts is disabled if this option is present.
+
+shutdown-directory
+    If specified, a shutdown script is created in the given directory.
+    Generation of run-control scripts is disabled if this option is present.
+
 rc-directory
     The directory where run-control scripts should be installed.
     Defaults to ``${buildout:directory}/bin``. Add this parameter with no
