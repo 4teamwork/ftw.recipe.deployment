@@ -4,6 +4,9 @@ Changelog
 1.2.0 (unreleased)
 ------------------
 
+- Let ``bin/packall`` log on success to ``var/log/pack.log``.
+  [jone]
+
 - Add option to create startup and shutdown scripts in a global
   directory instead of run-control scripts.
   [buchi]

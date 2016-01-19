@@ -317,7 +317,8 @@ We should also have a packall script for packing all databases::
 
     >>> cat(sample_buildout, 'bin', 'packall')
     #!/bin/sh
-    /sample-buildout/bin/zeopack -S 1 -B /sample-buildout/var/blobstorage
+    /sample-buildout/bin/zeopack -S 1 -B /sample-buildout/var/blobstorage \
+        && echo `date +%Y-%m-%dT%H:%M:%S%z` "packed Data (blobstorage)" >> /sample-buildout/var/log/pack.log
 
 We can specify the user that should be used to run processes::
 
@@ -582,7 +583,7 @@ Running the buildout gives us::
 
 Verify that the file contains our logrotate options::
 
-    >>> cat(sample_buildout, 'etc', 'logrotate.d', 'sample-buildout') 
+    >>> cat(sample_buildout, 'etc', 'logrotate.d', 'sample-buildout')
     ... #doctest: -NORMALIZE_WHITESPACE
     /sample-buildout/var/log/instance1.log
     /sample-buildout/var/log/instance1-Z2.log {
@@ -632,7 +633,8 @@ Our packall script should contain the correct storage parameters::
 
     >>> cat(sample_buildout, 'bin', 'packall')
     #!/bin/sh
-    /sample-buildout/bin/zeopack -S main -B /sample-buildout/var/blobstorage-main
+    /sample-buildout/bin/zeopack -S main -B /sample-buildout/var/blobstorage-main \
+        && echo `date +%Y-%m-%dT%H:%M:%S%z` "packed main (blobstorage-main)" >> /sample-buildout/var/log/pack.log
 
 Let's add a filestorage part. Thus we first need a fake ``collective.recipe.filestorage``
 recipe::
@@ -704,8 +706,10 @@ Our packall script should contain pack commands for all storages::
 
     >>> cat(sample_buildout, 'bin', 'packall')
     #!/bin/sh
-    /sample-buildout/bin/zeopack -S 1 -B /sample-buildout/var/blobstorage
-    /sample-buildout/bin/zeopack -S storage1
+    /sample-buildout/bin/zeopack -S 1 -B /sample-buildout/var/blobstorage  \
+        && echo `date +%Y-%m-%dT%H:%M:%S%z` "packed Data (blobstorage)" >> /sample-buildout/var/log/pack.log
+    /sample-buildout/bin/zeopack -S storage1 \
+        && echo `date +%Y-%m-%dT%H:%M:%S%z` "packed storage1" >> /sample-buildout/var/log/pack.log
 
 Let's create a buildout with multiple filestorages and blobs::
 
@@ -748,9 +752,12 @@ Our packall script should contain pack commands for all storages::
 
     >>> cat(sample_buildout, 'bin', 'packall')
     #!/bin/sh
-    /sample-buildout/bin/zeopack -S 1 -B /sample-buildout/var/blobstorage
-    /sample-buildout/bin/zeopack -S storage1_storage -B /sample-buildout/var/blobstorage-storage1
-    /sample-buildout/bin/zeopack -S storage2_storage -B /sample-buildout/var/blobstorage-storage2
+    /sample-buildout/bin/zeopack -S 1 -B /sample-buildout/var/blobstorage  \
+        && echo `date +%Y-%m-%dT%H:%M:%S%z` "packed Data (blobstorage)" >> /sample-buildout/var/log/pack.log
+    /sample-buildout/bin/zeopack -S storage1_storage -B /sample-buildout/var/blobstorage-storage1 \
+        && echo `date +%Y-%m-%dT%H:%M:%S%z` "packed storage1_storage (blobstorage-storage1)" >> /sample-buildout/var/log/pack.log
+    /sample-buildout/bin/zeopack -S storage2_storage -B /sample-buildout/var/blobstorage-storage2 \
+        && echo `date +%Y-%m-%dT%H:%M:%S%z` "packed storage2_storage (blobstorage-storage2)" >> /sample-buildout/var/log/pack.log
 
 Create a buildout with the packall-symlink-directory option::
 
