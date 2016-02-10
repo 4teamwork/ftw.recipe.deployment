@@ -43,11 +43,15 @@ def create_pack_script(recipe):
     zeopack = os.path.join(recipe.buildout_dir, 'bin', 'zeopack')
     for storage in storages:
         if storage[1]:
-            script += "%(zeopack)s -S %(file_storage)s -B %(blob_storage)s\n" % dict(
+            script += "%(zeopack)s -S %(file_storage)s -B %(blob_storage)s" % dict(
                 zeopack=zeopack, file_storage=storage[0], blob_storage=storage[1])
+            script += build_packed_log_entry_command(recipe, storage[0], storage[1])
+            script += '\n'
         else:
-            script += "%(zeopack)s -S %(file_storage)s\n" % dict(
+            script += "%(zeopack)s -S %(file_storage)s" % dict(
                 zeopack=zeopack, file_storage=storage[0])
+            script += build_packed_log_entry_command(recipe, storage[0])
+            script += '\n'
     script_path = os.path.join(recipe.buildout_dir, 'bin', 'packall')
     script_file = open(script_path, 'w')
     script_file.write(script)
@@ -71,6 +75,24 @@ def create_pack_script(recipe):
             os.symlink(script_path, link_path)
             created_files.append(link_path)
     return created_files
+
+
+def build_packed_log_entry_command(recipe, storage, blobstorage=None):
+    if storage == '1':
+        storage = 'Data'
+    if blobstorage:
+        blobstorage = os.path.basename(blobstorage)
+
+    if blobstorage:
+        message = 'packed {} ({})'.format(storage, blobstorage)
+    else:
+        message = 'packed {}'.format(storage)
+
+    logfile = os.path.join(recipe.buildout_dir, 'var', 'log', 'pack.log')
+    return ' \\\n    && echo {datecmd} "{message}" >> {logfile}'.format(
+        datecmd='`date +%Y-%m-%dT%H:%M:%S%z`',
+        message=message,
+        logfile=logfile)
 
 
 def subpart_option(buildout, part, subpart, option, default=''):
