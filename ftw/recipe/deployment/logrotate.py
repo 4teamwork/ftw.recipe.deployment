@@ -79,6 +79,38 @@ def create_logrotate_conf(recipe):
 
         logrotate_conf.write('}\n')
 
+    # Add configuration for ftw.structlog logs
+    for zope_part in recipe.zope_parts:
+        event_log = '%s/var/log/%s.log' % (recipe.buildout_dir, zope_part)
+        event_log = recipe.buildout[zope_part].get('event-log', event_log)
+        # ftw.structlog's log path is based on eventlog path
+        structlog_json_log = event_log.replace('.log', '-json.log')
+
+        if event_log:
+            logrotate_conf.write(structlog_json_log)
+            logrotate_conf.write(' {\n')
+
+            # logrotate options
+            for opt in logrotate_options:
+                if opt == 'nocopytruncate':
+                    # We always want copytruncate for ftw.structlog logfiles
+                    continue
+                logrotate_conf.write('    %s\n' % opt)
+
+            if 'copytruncate' not in logrotate_options:
+                # Always use 'copytruncate' for ftw.structlog logfiles. We need
+                # this because ftw.structlog doesn't have a signal handler to
+                # reopen logfiles after rotation
+                logrotate_conf.write('    copytruncate\n')
+
+            # Ensure 'missingok' is always set, since ftw.structlog logfiles
+            # may not exist for many deplyoments, but we always generate the
+            # logrotation config for them unconditionally
+            if 'missingok' not in logrotate_options:
+                logrotate_conf.write('    missingok\n')
+
+            logrotate_conf.write('}\n')
+
     # Create the logrotate file
     file_name = os.path.join(logrotate_dir, recipe.buildout_name)
     logrotate_file = open(file_name, 'w')

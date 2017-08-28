@@ -8,7 +8,8 @@ deploying Plone/Zope2 with buildout.
 
 As for now the following features are provided:
 
-* Create Logrotate configuration for all Zope 2 instance and ZEO parts.
+* Create Logrotate configuration for all Zope 2 instance and ZEO parts,
+  as well as ``ftw.structlog`` logfiles.
 
 * Create RedHat-like run-control scripts.
 
@@ -25,6 +26,10 @@ logrotate-directory
     Defaults to ``${buildout:directory}/etc/logrotate.d``. Add this parameter
     with no arguments to supress generation of logrotate configuration.
 
+    If this parameter is set, this recipe will create logrotate configs for
+    all Zope 2 instance and ZEO parts that are present, and (unconditionally)
+    a logrotate config for ``ftw.structlog`` logfiles.
+
 logrotate-options
     A list of logrotate options that should be added to the logrotate
     configuration.
@@ -40,6 +45,15 @@ logrotate-options
          missingok
          notifempty
          nomail
+
+    The logrotate config for ``ftw.structlog`` logfiles will be created with
+    settings similar to the other logfiles, except:
+
+    * No ``postrotate`` script will be automatically inserted if not already
+      present in ``logrotate-options``
+    * ``missingok`` will always be included
+    * Rotation mode will always be ``copytruncate``, and ``nocopytruncate``
+      will be ignored
 
 startup-directory
     If specified, a start script is created in the given directory.
