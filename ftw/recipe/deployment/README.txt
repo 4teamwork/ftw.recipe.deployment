@@ -87,6 +87,10 @@ containing our logrotate configuration::
             /bin/kill -SIGUSR2 `cat /sample-buildout/var/instance1.pid 2>/dev/null` >/dev/null 2>&1 || true
         endscript
     }
+    /sample-buildout/var/log/instance1-json.log {
+        copytruncate
+        missingok
+    }
 
 We should also have a run-control script for instance1::
 
@@ -223,6 +227,14 @@ Verify the contents of the logrotate configuration file::
     }
     /sample-buildout/var/log/zeo.log {
         copytruncate
+    }
+    /sample-buildout/var/log/instance1-json.log {
+        copytruncate
+        missingok
+    }
+    /sample-buildout/var/log/instance2-json.log {
+        copytruncate
+        missingok
     }
 
 Verify the zeo run control script::
@@ -596,6 +608,14 @@ Verify that the file contains our logrotate options::
         postrotate
             /bin/kill -SIGUSR2 `cat /sample-buildout/var/instance1.pid 2>/dev/null` >/dev/null 2>&1 || true
         endscript
+    }
+    /sample-buildout/var/log/instance1-json.log {
+        rotate 4
+        weekly
+        missingok
+        notifempty
+        nomail
+        copytruncate
     }
 
 We can provide custom storage options::
