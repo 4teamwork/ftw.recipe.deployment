@@ -140,6 +140,29 @@ We should also have a run-control script for instance1::
             ;;
     esac
 
+We should also have a filebeat prospectors config for your deployment::
+
+    >>> cat(sample_buildout, 'etc', 'filebeat.d', 'sample-buildout.yml')
+    ... #doctest: -NORMALIZE_WHITESPACE
+    - type: log
+      fields:
+        event_type: contentstats
+        deployment: sample-buildout
+      fields_under_root: true
+      json.keys_under_root: true
+      json.add_error_key: true
+      paths:
+        - /sample-buildout/var/log/contentstats-json.log
+    - type: log
+      fields:
+        event_type: structlog
+        deployment: sample-buildout
+      fields_under_root: true
+      json.keys_under_root: true
+      json.add_error_key: true
+      paths:
+        - /sample-buildout/var/log/instance1-json.log
+
 Let's also add a zeo part. Thus we first need a fake ``plone.recipe.zeoserver``
 recipe::
 

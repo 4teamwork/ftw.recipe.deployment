@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 """Recipe deployment"""
 import os.path
+from ftw.recipe.deployment.filebeat import create_filebeat_conf
 from ftw.recipe.deployment.logrotate import create_logrotate_conf
-from ftw.recipe.deployment.rc import create_rc_scripts
 from ftw.recipe.deployment.pack import create_pack_script
+from ftw.recipe.deployment.rc import create_rc_scripts
 
 
 class Recipe(object):
@@ -65,6 +66,11 @@ class Recipe(object):
         logrotate_conf = create_logrotate_conf(self)
         if logrotate_conf:
             files.append(logrotate_conf)
+
+        # Create filebeat configuration
+        filebeat_conf = create_filebeat_conf(self)
+        if filebeat_conf:
+            files.append(filebeat_conf)
 
         rc_scripts = create_rc_scripts(self)
         files.extend(rc_scripts)
