@@ -15,6 +15,9 @@ As for now the following features are provided:
 
 * Create packall script for packing of all storages.
 
+* Create filebeat prospector configs for ``ftw.structlog`` and
+  ``ftw.contentstats`` logs.
+
 
 Supported options
 =================
