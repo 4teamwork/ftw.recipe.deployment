@@ -1,3 +1,4 @@
+from ftw.recipe.deployment.utils import chmod_executable
 import os
 import os.path
 
@@ -56,7 +57,7 @@ def create_pack_script(recipe):
     script_file = open(script_path, 'w')
     script_file.write(script)
     script_file.close()
-    os.chmod(script_path, 0755)
+    chmod_executable(script_path)
     created_files.append(script_path)
 
     # Create symlink

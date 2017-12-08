@@ -1,3 +1,4 @@
+from ftw.recipe.deployment.utils import chmod_executable
 from zc.buildout.buildout import MissingOption
 from zc.buildout import UserError
 import os.path
@@ -42,14 +43,14 @@ def create_rc_scripts(recipe):
             script_file = open(script_path, 'w')
             script_file.write('#!/bin/sh\n%s/bin/supervisord\n' % recipe.buildout_dir)
             script_file.close()
-            os.chmod(script_path, 0755)
+            chmod_executable(script_path)
             files.append(script_path)
             # Create shutdown script
             script_path = os.path.join(shutdown_dir, recipe.buildout_name)
             script_file = open(script_path, 'w')
             script_file.write('#!/bin/sh\n%s/bin/supervisorctl shutdown\n' % recipe.buildout_dir)
             script_file.close()
-            os.chmod(script_path, 0755)
+            chmod_executable(script_path)
             files.append(script_path)
         else:
             raise UserError('supervisor section required with option startup_dir')
@@ -68,7 +69,7 @@ def create_rc_scripts(recipe):
             rc_file.write(SUPERVISOR_RC_TEMPLATE % dict(
                 supervisorctl=supervisorctl, supervisord=supervisord, user=rc_user))
             rc_file.close()
-            os.chmod(rc_filename, 0755)
+            chmod_executable(rc_filename)
             files.append(rc_filename)
         else:
             for zope_part in recipe.zope_parts:
@@ -77,7 +78,7 @@ def create_rc_scripts(recipe):
                 rc_file = open(rc_filename, 'w')
                 rc_file.write(ZOPE_RC_TEMPLATE % dict(zopectl=zopectl, user=rc_user))
                 rc_file.close()
-                os.chmod(rc_filename, 0755)
+                chmod_executable(rc_filename)
                 files.append(rc_filename)
 
             for zeo_part in recipe.zeo_parts:
@@ -86,10 +87,11 @@ def create_rc_scripts(recipe):
                 rc_file = open(rc_filename, 'w')
                 rc_file.write(ZEO_RC_TEMPLATE % dict(zeoctl=zeoctl, user=rc_user))
                 rc_file.close()
-                os.chmod(rc_filename, 0755)
+                chmod_executable(rc_filename)
                 files.append(rc_filename)
 
     return files
+
 
 ZOPE_RC_TEMPLATE = """#!/bin/sh
 
