@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.4.1 (unreleased)
+1.4.1 (2018-01-10)
 ------------------
 
 - Only chmod scripts to executable if they're not already executable.
