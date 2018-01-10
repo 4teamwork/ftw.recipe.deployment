@@ -4,7 +4,8 @@ Changelog
 1.4.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Only chmod scripts to executable if they're not already executable.
+  [buchi]
 
 
 1.4.0 (2017-12-08)
