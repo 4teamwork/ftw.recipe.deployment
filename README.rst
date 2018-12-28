@@ -96,6 +96,11 @@ packall-symlink-directory
     Creates a symlink to the packall script in the given directory. Can
     be used to automate packing for multiple deployments.
 
+create-filebeat-config
+    Boolean to indicate whether a filebeat config should be created for this
+    deployment. Defaults to true. Set to ``false`` to suppress creation of
+    a filebeat config.
+
 
 Links
 =====

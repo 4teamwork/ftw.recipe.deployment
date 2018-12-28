@@ -163,6 +163,37 @@ We should also have a filebeat prospectors config for your deployment::
       paths:
         - /sample-buildout/var/log/instance1-json.log
 
+Except if we specifically disable creation of the filebeat config::
+
+    >>> write('buildout.cfg',
+    ... """
+    ... [buildout]
+    ... develop = plone.recipe.zope2instance
+    ... parts = instance1 deployment
+    ...
+    ... [instance1]
+    ... recipe = plone.recipe.zope2instance
+    ...
+    ... [deployment]
+    ... recipe = ftw.recipe.deployment
+    ... create-filebeat-config = false
+    ... """)
+
+And then run buildout again::
+
+    >>> print system(buildout)
+    Develop: '/sample-buildout/plone.recipe.zope2instance'
+    Uninstalling deployment.
+    Updating instance1.
+    Installing deployment.
+    <BLANKLINE>
+
+We should NOT have a filebeat config for our deployment::
+
+    >>> import os
+    >>> os.path.isfile(os.path.join(sample_buildout, 'etc', 'filebeat.d', 'sample-buildout.yml'))
+    False
+
 Let's also add a zeo part. Thus we first need a fake ``plone.recipe.zeoserver``
 recipe::
 
@@ -225,10 +256,11 @@ Running the buildout gives us::
     >>> print system(buildout)
     Develop: '/sample-buildout/plone.recipe.zope2instance'
     Develop: '/sample-buildout/plone.recipe.zeoserver'
+    Uninstalling deployment.
     Updating instance1.
     Installing instance2.
     Installing zeo.
-    Updating deployment.
+    Installing deployment.
     <BLANKLINE>
 
 Verify the contents of the logrotate configuration file::
