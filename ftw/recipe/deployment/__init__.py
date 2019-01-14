@@ -5,6 +5,10 @@ from ftw.recipe.deployment.filebeat import create_filebeat_conf
 from ftw.recipe.deployment.logrotate import create_logrotate_conf
 from ftw.recipe.deployment.pack import create_pack_script
 from ftw.recipe.deployment.rc import create_rc_scripts
+import logging
+
+
+recipe_logger = logging.getLogger(__name__)
 
 
 class Recipe(object):
@@ -22,6 +26,23 @@ class Recipe(object):
                 part = self.buildout[part_name]
                 if part.get('recipe', None) == 'plone.recipe.zope2instance':
                     self.zope_parts.append(part_name)
+
+        if not all_unique(self.zope_parts):
+            msg = '\n'.join((
+                '',
+                '##########################################################',
+                '# Duplicate zope parts found!',
+                '# %r',
+                '# This could be caused by extending from multiple zeoclients/',
+                '# .cfg files instead of just one, and should be avoided.',
+                '# To prevent generating invalid logrotate configs, duplicate',
+                '# parts will be skipped, but you should still fix this issue.',
+                '##########################################################',
+                '',
+            )) % self.zope_parts
+
+            recipe_logger.warn(msg)
+            self.zope_parts = sorted(list(set(self.zope_parts)))
 
         # Figure out zeo server parts
         self.zeo_parts = options.get('zeos', '').split()
@@ -92,3 +113,7 @@ class Recipe(object):
     def update(self):
         """Updater"""
         return self.install()
+
+
+def all_unique(sequence):
+    return len(set(sequence)) == len(sequence)

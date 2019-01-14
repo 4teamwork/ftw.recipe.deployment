@@ -194,6 +194,56 @@ We should NOT have a filebeat config for our deployment::
     >>> os.path.isfile(os.path.join(sample_buildout, 'etc', 'filebeat.d', 'sample-buildout.yml'))
     False
 
+If we mistakenly add duplicate plone.recipe.zope2instance instances to parts::
+
+    >>> write('buildout.cfg',
+    ... """
+    ... [buildout]
+    ... develop = plone.recipe.zope2instance
+    ... parts = instance1 instance1 instance1 instance1 instance1 deployment
+    ...
+    ... [instance1]
+    ... recipe = plone.recipe.zope2instance
+    ...
+    ... [deployment]
+    ... recipe = ftw.recipe.deployment
+    ... """)
+
+Running buildout will print a warning::
+
+    >>> print system(buildout)
+    Develop: '/sample-buildout/plone.recipe.zope2instance'
+    ftw.recipe.deployment:
+    ##########################################################
+    # Duplicate zope parts found!
+    # ['instance1', 'instance1', 'instance1', 'instance1', 'instance1']
+    # This could be caused by extending from multiple zeoclients/
+    # .cfg files instead of just one, and should be avoided.
+    # To prevent generating invalid logrotate configs, duplicate
+    # parts will be skipped, but you should still fix this issue.
+    ##########################################################
+    <BLANKLINE>
+    Uninstalling deployment.
+    Updating instance1.
+    Installing deployment.
+    <BLANKLINE>
+
+And we still end up with a valid logrotate config (no duplicated paths)::
+
+    >>> cat(sample_buildout, 'etc', 'logrotate.d', 'sample-buildout')
+    ... #doctest: -NORMALIZE_WHITESPACE
+    /sample-buildout/var/log/instance1.log
+    /sample-buildout/var/log/instance1-Z2.log {
+        sharedscripts
+        postrotate
+            /bin/kill -SIGUSR2 `cat /sample-buildout/var/instance1.pid 2>/dev/null` >/dev/null 2>&1 || true
+        endscript
+    }
+    /sample-buildout/var/log/instance1-json.log {
+        copytruncate
+        missingok
+    }
+
 Let's also add a zeo part. Thus we first need a fake ``plone.recipe.zeoserver``
 recipe::
 
@@ -256,11 +306,10 @@ Running the buildout gives us::
     >>> print system(buildout)
     Develop: '/sample-buildout/plone.recipe.zope2instance'
     Develop: '/sample-buildout/plone.recipe.zeoserver'
-    Uninstalling deployment.
     Updating instance1.
     Installing instance2.
     Installing zeo.
-    Installing deployment.
+    Updating deployment.
     <BLANKLINE>
 
 Verify the contents of the logrotate configuration file::
