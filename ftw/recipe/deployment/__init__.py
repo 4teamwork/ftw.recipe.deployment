@@ -47,6 +47,13 @@ class Recipe(object):
             else:
                 self.has_supervisor = True
 
+        # Determine if we should create filebeat config
+        self.create_filebeat_config = options.get('create-filebeat-config', '')
+        if self.create_filebeat_config.lower() == 'false':
+            self.create_filebeat_config = False
+        else:
+            self.create_filebeat_config = True
+
         # Figure out filestorage parts
         self.filestorage_parts = options.get('filestorage', '').split()
         if len(self.filestorage_parts) == 0:
@@ -68,9 +75,10 @@ class Recipe(object):
             files.append(logrotate_conf)
 
         # Create filebeat configuration
-        filebeat_conf = create_filebeat_conf(self)
-        if filebeat_conf:
-            files.append(filebeat_conf)
+        if self.create_filebeat_config:
+            filebeat_conf = create_filebeat_conf(self)
+            if filebeat_conf:
+                files.append(filebeat_conf)
 
         rc_scripts = create_rc_scripts(self)
         files.extend(rc_scripts)
