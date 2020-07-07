@@ -262,6 +262,7 @@ recipe::
     ...                               )
     ...         self.storage_number = options.get('storage-number', '1')
     ...         self.blob_storage = options.get('blob-storage', '')
+    ...         self.zeopack_script_name = options.get('zeopack-script-name', 'zeopack')
     ...
     ...     def install(self):
     ...         return tuple()
@@ -773,6 +774,7 @@ recipe::
     ...     def __init__(self, buildout, name, options):
     ...         self.name, self.options = name, options
     ...         self.subparts = options.get('parts', '').split()
+    ...         self.zeopack_script_name = options.get('zeo', 'zeo')
     ...
     ...     def install(self):
     ...         return tuple()
@@ -835,6 +837,66 @@ Our packall script should contain pack commands for all storages::
     /sample-buildout/bin/zeopack -S storage1 \
         && echo `date +%Y-%m-%dT%H:%M:%S%z` "packed storage1" >> /sample-buildout/var/log/pack.log
 
+
+Create a buildout with a two filestorage parts, two zeo parts and custom zeo-script-name::
+
+    >>> write('buildout.cfg',
+    ... """
+    ... [buildout]
+    ... develop = plone.recipe.zope2instance plone.recipe.zeoserver collective.recipe.filestorage
+    ... parts = instance1 zeo filestorage zeo2 filestorage2 deployment
+    ...
+    ... [instance1]
+    ... recipe = plone.recipe.zope2instance
+    ...
+    ... [zeo]
+    ... recipe = plone.recipe.zeoserver
+    ...
+    ... [filestorage]
+    ... recipe = collective.recipe.filestorage
+    ... parts = storage1
+    ...
+    ... [zeo2]
+    ... recipe = plone.recipe.zeoserver
+    ... zeopack-script-name = zeopack2
+    ...
+    ... [filestorage2]
+    ... recipe = collective.recipe.filestorage
+    ... parts = storage2
+    ... zeo = zeo2
+    ...
+    ... [deployment]
+    ... recipe = ftw.recipe.deployment
+    ... """)
+
+Running the buildout gives us::
+
+    >>> print system(buildout)
+    Develop: '/sample-buildout/plone.recipe.zope2instance'
+    Develop: '/sample-buildout/plone.recipe.zeoserver'
+    Develop: '/sample-buildout/collective.recipe.filestorage'
+    Updating instance1.
+    Updating zeo.
+    Updating filestorage.
+    Installing zeo2.
+    Installing filestorage2.
+    Updating deployment.
+    <BLANKLINE>
+
+Our packall script should contain pack commands for all storages::
+
+    >>> cat(sample_buildout, 'bin', 'packall')
+    #!/bin/sh
+    /sample-buildout/bin/zeopack -S 1 -B /sample-buildout/var/blobstorage  \
+        && echo `date +%Y-%m-%dT%H:%M:%S%z` "packed Data (blobstorage)" >> /sample-buildout/var/log/pack.log
+    /sample-buildout/bin/zeopack2 -S 1 -B /sample-buildout/var/blobstorage \
+        && echo `date +%Y-%m-%dT%H:%M:%S%z` "packed Data (blobstorage)" >> /sample-buildout/var/log/pack.log
+    /sample-buildout/bin/zeopack -S storage1 \
+        && echo `date +%Y-%m-%dT%H:%M:%S%z` "packed storage1" >> /sample-buildout/var/log/pack.log
+    /sample-buildout/bin/zeopack2 -S storage2 \
+        && echo `date +%Y-%m-%dT%H:%M:%S%z` "packed storage2" >> /sample-buildout/var/log/pack.log
+
+
 Let's create a buildout with multiple filestorages and blobs::
 
     >>> write('buildout.cfg',
@@ -865,6 +927,8 @@ Running the buildout gives us::
     Develop: '/sample-buildout/plone.recipe.zope2instance'
     Develop: '/sample-buildout/plone.recipe.zeoserver'
     Develop: '/sample-buildout/collective.recipe.filestorage'
+    Uninstalling filestorage2.
+    Uninstalling zeo2.
     Uninstalling filestorage.
     Updating instance1.
     Updating zeo.

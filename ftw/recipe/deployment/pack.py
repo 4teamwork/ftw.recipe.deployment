@@ -20,7 +20,8 @@ def create_pack_script(recipe):
             blob_storage = recipe.buildout[zeo_part].get(
                 'blob-storage', 'blobstorage')
             blob_storage = os.path.join(recipe.buildout_dir, 'var', blob_storage)
-        storages.append((file_storage, blob_storage))
+        zeopack_name = recipe.buildout[zeo_part].get('zeopack-script-name', 'zeopack')
+        storages.append((file_storage, blob_storage, zeopack_name))
 
     # Determine storages from c.r.filestorage parts
     for fs_part in recipe.filestorage_parts:
@@ -36,13 +37,17 @@ def create_pack_script(recipe):
                 if not blob_storage.startswith(os.path.sep):
                     blob_storage = os.path.join(
                         recipe.buildout['buildout']['directory'], blob_storage)
-            storages.append((file_storage, blob_storage))
+            zeopack_name = 'zeopack'
+            zeo_part_name = subpart_option(recipe.buildout, fs_part, 'zeo', 'zeo')
+            if zeo_part_name:
+                zeopack_name = recipe.buildout[zeo_part_name].get('zeopack-script-name', 'zeopack')
+            storages.append((file_storage, blob_storage, zeopack_name))
 
     # Create script
     created_files = []
     script = "#!/bin/sh\n"
-    zeopack = os.path.join(recipe.buildout_dir, 'bin', 'zeopack')
     for storage in storages:
+        zeopack = os.path.join(recipe.buildout_dir, 'bin', storage[2])
         if storage[1]:
             script += "%(zeopack)s -S %(file_storage)s -B %(blob_storage)s" % dict(
                 zeopack=zeopack, file_storage=storage[0], blob_storage=storage[1])

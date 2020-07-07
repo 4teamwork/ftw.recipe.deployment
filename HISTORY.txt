@@ -4,7 +4,7 @@ Changelog
 1.4.4 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Add multi zeo support for pack script generator. [mathias.leimgruber, Nachtalb]
 
 
 1.4.3 (2019-02-04)
